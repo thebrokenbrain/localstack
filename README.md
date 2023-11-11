@@ -61,13 +61,13 @@ Por último, cargar el alias **```aws --profile=localstack --endpoint-url=$LOCAL
 ```bash
 source aws_alias
 ```
-Con el alias cargado ya cargado en lugar de ejecutar, por ejemplo, el siguiente comando para verificar la conexión con la API de AWS de LocalStack:
+Con el alias ya cargado en lugar de ejecutar, por ejemplo, el siguiente comando para verificar la conexión con la API de AWS de LocalStack:
 
 ```bash
 $ aws --profile=localstack --endpoint-url=http://127.0.0.1:4566 sts get-caller-identity
 ```
 
-Podremos ejecutar:
+Podemos usar:
 
 ```bash
 $ aws sts get-caller-identity
