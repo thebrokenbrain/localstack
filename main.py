@@ -10,7 +10,8 @@ if __name__ == '__main__':
     s3 = S3LocalStack(os.getenv("AWS_CONFIG_FILE"),
                     os.getenv("AWS_SHARED_CREDENTIALS_FILE"),
                     os.getenv("LOCALSTACK_ENDPOINT_URL"),
-                    'us-east-1')
+                    'us-east-1',
+                    's3')
 
     # Se crean los buckets.
     print('Creating buckets')

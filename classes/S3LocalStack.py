@@ -1,47 +1,19 @@
-import boto3
-from botocore.session import Session
+from classes.LocalStackBase import LocalStackBase
 
-class S3LocalStack:
+class S3LocalStack(LocalStackBase):
     def __init__(self,
                  aws_config_file,
                  aws_shared_credentials_file,
                  localstack_endpoint_url,
-                 aws_region):
+                 aws_region,
+                 service_name):
         
-        # AWS credentials.
-        self.aws_config_file = aws_config_file
-        self.aws_shared_credentials_file = aws_shared_credentials_file
-        
-        # AWS region
-        self.aws_region = aws_region
-        
-        # Localstack endpoint url.
-        self.localstack_endpoint_url = localstack_endpoint_url
-        
-        # Create S3 client.
-        self.s3_client = self.create_client()
-    
-    def create_client(self, profile='localstack'):
-        """
-        Creates an S3 client using the provided profile and returns it.
-
-        Args:
-            profile (str): The name of the profile to use. Defaults to 'localstack'.
-
-        Returns:
-            boto3.client: An S3 client object.
-        """
-        # Load credentials
-        session = Session(profile=profile)
-        credentials = session.get_credentials()
-
-        # Create S3 client
-        s3_client = boto3.client('s3', 
-                                 region_name=self.aws_region,
-                                 endpoint_url=self.localstack_endpoint_url, 
-                                 aws_access_key_id=credentials.access_key, 
-                                 aws_secret_access_key=credentials.secret_key)
-        return s3_client
+        LocalStackBase.__init__(self,
+                                aws_config_file,
+                                aws_shared_credentials_file,
+                                localstack_endpoint_url,
+                                aws_region,
+                                service_name)
     
     def create_bucket(self, bucket_name):
         """
@@ -53,7 +25,7 @@ class S3LocalStack:
         Returns:
             None
         """
-        self.s3_client.create_bucket(Bucket=bucket_name)
+        self.client.create_bucket(Bucket=bucket_name)
         print('Bucket ' + bucket_name + ' created')
         
     def initialize_bucket(self, bucket_name, files):
@@ -68,7 +40,7 @@ class S3LocalStack:
             None
         """
         for file in files: 
-            self.s3_client.upload_file('images/' + file, bucket_name, file)
+            self.client.upload_file('images/' + file, bucket_name, file)
     
     def list_bucket_objects(self, bucket_name):
         """
@@ -80,7 +52,7 @@ class S3LocalStack:
         Returns:
             None
         """
-        response = self.s3_client.list_objects_v2(Bucket=bucket_name)
+        response = self.client.list_objects_v2(Bucket=bucket_name)
         for object in response['Contents']:
             print(object['Key'])
     
@@ -95,16 +67,16 @@ class S3LocalStack:
         Returns:
             None
         """
-        response = self.s3_client.list_objects_v2(Bucket=bucket_name)
+        response = self.client.list_objects_v2(Bucket=bucket_name)
         # check if response is not empty
         if 'Contents' not in response:
             print('Bucket ' + bucket_name + ' is empty')
         else:
             for object in response['Contents']:
-                self.s3_client.delete_object(Bucket=bucket_name, Key=object['Key'])
+                self.client.delete_object(Bucket=bucket_name, Key=object['Key'])
                 print('Deleted object: ' + object['Key'])
         if delete_bucket:
-            self.s3_client.delete_bucket(Bucket=bucket_name)
+            self.client.delete_bucket(Bucket=bucket_name)
             print('Bucket ' + bucket_name + ' deleted')
     
     def list_buckets(self):
@@ -114,7 +86,7 @@ class S3LocalStack:
         Returns:
             None
         """
-        response = self.s3_client.list_buckets()
+        response = self.client.list_buckets()
         for bucket in response['Buckets']:
             print(bucket['Name'])
     
@@ -129,9 +101,9 @@ class S3LocalStack:
         Returns:
             None
         """
-        response = self.s3_client.list_objects_v2(Bucket=source_bucket_name)
+        response = self.client.list_objects_v2(Bucket=source_bucket_name)
         for object in response['Contents']:
-            self.s3_client.copy_object(Bucket=destination_bucket_name, 
+            self.client.copy_object(Bucket=destination_bucket_name, 
                                        CopySource={'Bucket': source_bucket_name, 'Key': object['Key']}, 
                                        Key=object['Key'])
             print('Copied object ' + object['Key'] + ' from bucket ' + source_bucket_name + ' to bucket ' + destination_bucket_name)
