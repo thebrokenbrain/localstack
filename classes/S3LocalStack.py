@@ -1,20 +1,6 @@
 from classes.LocalStackBase import LocalStackBase
 
 class S3LocalStack(LocalStackBase):
-    def __init__(self,
-                 aws_config_file,
-                 aws_shared_credentials_file,
-                 localstack_endpoint_url,
-                 aws_region,
-                 service_name):
-        
-        LocalStackBase.__init__(self,
-                                aws_config_file,
-                                aws_shared_credentials_file,
-                                localstack_endpoint_url,
-                                aws_region,
-                                service_name)
-    
     def create_bucket(self, bucket_name):
         """
         Crea un nuevo bucket en Amazon S3 pasado como parámetro.
